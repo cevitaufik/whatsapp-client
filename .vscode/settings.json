@@ -1,0 +1,23 @@
+{
+    "editor.tabSize": 2,
+    "files.associations": {},
+    "blade.format.enable": true,
+    "editor.formatOnSave": false,
+    "intelephense.diagnostics.undefinedTypes": false,
+    "intelephense.files.exclude": [
+        "**/.git/**",
+        "**/.svn/**",
+        "**/.hg/**",
+        "**/CVS/**",
+        "**/.DS_Store/**",
+        "**/node_modules/**",
+        "**/bower_components/**",
+        "**/.history/**",
+        "**/vendor/**/{Tests,tests}/**",
+        "**/vendor/**/vendor/**"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "typescript.tsdk": "./node_modules/typescript/lib"
+}

@@ -1,58 +1,26 @@
-import express, { Express, Request, Response } from 'express'
-import LocalAuth from 'whatsapp-web.js/src/authStrategies/LocalAuth.js';
-import { Client } from 'whatsapp-web.js'
-import qrcode from 'qrcode-terminal'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import express, { type Express, type Request, type Response } from 'express'
+import { send, connection } from './co'
+import bodyParser from 'body-parser'
 
-import fs from 'fs'
+const app: Express = express()
+const port = 3000
 
-fs.rmSync('./.wwebjs_auth/session-tes-1', { recursive: true, force: true })
-
-const client = new Client({
-    authStrategy: new LocalAuth({clientId: 'tes-1'}),
-    puppeteer: { headless: true, args: ['--no-sandbox']}
-});
-
-client.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
-    console.log(qr);
-});
-
-client.on('ready', () => {
-    console.log('Client is ready!');
-    sendMessage()
-    console.log(client.getState().then(t => console.log(t)));
-});
-
-function sendMessage() {
-    // Number where you want to send the message.
-    const number = "6289660408282";
-
-    // Your message.
-    const text = "Hey john";
-
-    // Getting chatId from the number.
-    // we have to delete "+" from the beginning and add "@c.us" at the end of the number.
-    const chatId = number + "@c.us";
-
-    // Sending message.
-    client.sendMessage(chatId, text)
-        .then(response => console.log(response))
-}
-
-client.on('message', () => sendMessage())
-
-client.initialize()
-
-const app: Express = express();
-const port = 3000;
+app.use(bodyParser.json())
 
 app.get('/', (req: Request, res: Response) => {
-    sendMessage()
-
-    console.log(req.query);
   res.json('oke')
-});
+})
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+app.post('/send', async (req: Request, res: Response) => {
+  await send(req.body.message, req.body.to)
+    .then(() => res.json('oke'))
+})
+
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+connection()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running at http://localhost:${port}`)
+    })
+  })
